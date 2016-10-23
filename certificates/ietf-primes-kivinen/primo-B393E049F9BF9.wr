@@ -1,0 +1,20 @@
+[PRIMO - Work Report]
+Version=4.1.0 - LX64
+WebSite=http://www.ellipsa.eu/
+Work=Verification
+ID=B393E049F9BF9
+Created=11-13-2014 09:32:49 PM
+
+[Common]
+Path=/home/kivinen/ietf/91-honolulu/e-primes/
+Selected=1
+Processed=1
+Certified=1
+Candidate 1=Certified, 21.14s
+
+[Candidate 1]
+Input=tls-e-2432.in
+Report=primo-B393E049F9BF9-001.cr
+Output=primo-B393E049F9BF9-001.out
+Status=Candidate certified prime
+

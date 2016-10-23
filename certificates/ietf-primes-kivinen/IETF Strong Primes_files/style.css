@@ -1,0 +1,35 @@
+BODY {
+  background: #e0e0d0;
+  color: black;
+  line-height: 120%;
+  font-family: sans-serif;
+  padding: 5pt 30pt 30pt 30pt;
+}
+
+PRE {
+  line-height: 100%;
+  background: #f0f0f0;
+  padding: 10pt 10pt 10pt 10pt;
+  border-style: solid;
+  border-width: 1pt;
+}
+
+H1, H2, H3 { font-family: serif; }
+H1 { color: #06A; line-height: 120%; text-align: center; }
+H2, H3 { color: #037; }
+H3 { margin-bottom: 0pt; }
+H3 + P { margin-top: 5pt; }
+
+A:link { color: #00C; }
+A:visited { color: #006; }
+A:active { color: #C00; }
+A:link img, A:visited img { border-style: none; }
+
+
+DIV.validator {
+  float: right;
+  margin: -10pt -3pt 0pt 0pt;
+  padding: 0pt;
+}
+
+
