@@ -1,0 +1,20 @@
+[PRIMO - Work Report]
+Version=4.2.1 - LX64
+WebSite=http://www.ellipsa.eu/
+Work=Certification
+ID=B3C0404C6688B
+Created=10-23-2016 10:15:11 PM
+
+[Common]
+Path=/tmp/
+Selected=1
+Processed=1
+Certified=1
+Candidate 1=Certified, 0.10s
+
+[Candidate 1]
+Input=a.in
+Report=primo-B3C0404C6688B-001.cr
+Output=primo-B3C0404C6688B-001.out
+Status=Candidate certified prime
+
