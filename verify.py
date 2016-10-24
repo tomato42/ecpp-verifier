@@ -9,7 +9,7 @@ def fibonacci(n, mod):
     # en.wikipedia.org/wiki/Fibonacci_number#Matrix_form
     v1, v2, v3 = 1, 1, 0 # init matrix [[1, 1], [1, 0]]
     for i, rec in enumerate(bin(n)[3:]):  # perform fast exponentiation of the matrix (quickly raise it to the nth power)
-        print(i)
+#        print(i)
         calc = v2*v2 % mod
         v1, v2, v3 = (v1*v1+calc) % mod, ((v1+v3)*v2) % mod, (calc+v3*v3) % mod
         if rec=='1':
