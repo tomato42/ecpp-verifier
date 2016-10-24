@@ -183,7 +183,7 @@ s = int('4C4', 16)
 w = -int('10524B97FE172A1FA2', 16)
 a = 2
 b = 0
-t = 3
+t = 4
 
 r = curve_test(n, s, w, a, b, t)
 
