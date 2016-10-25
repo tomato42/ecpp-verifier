@@ -94,7 +94,66 @@ assert lucas(10, 83) == 123 % 83
 assert lucas(1000, 83) == lucas(1000, 2**1024) % 83
 assert lucas(10**19, 1000000005) == lucas2(10**19, 1000000005)
 
+def lucasPQ(p, q, n, m):
+#    print(p, q, n)
+    # nth element of lucas sequence with
+    # parameters p and q (mod m)
+    def half(x):
+        if x % 2 == 1: x = x + m
+        return (x // 2) % m
+    un, vn, qn = 1, p, q
+    u = 0 if n % 2 == 0 else 1
+    v = 2 if n % 2 == 0 else p
+    k = 1 if n % 2 == 0 else q
+    n, d = n // 2, p * p - 4 * q
+    while n > 0:
+        u2 = (un * vn) % m
+        v2 = (vn * vn - 2 * qn) % m
+        q2 = (qn * qn) % m
+        n2 = n // 2
+        if n % 2 == 1:
+            uu = half(u * v2 + u2 * v)
+            vv = half(v * v2 + d * u * u2)
+            u, v, k = uu, vv, k * q2
+        un, vn, qn, n = u2, v2, q2, n2
+    return u, v, k
+
+
+def lucas_lehmer_riesel_test(n, s, q):
+    # the "N+1 Test"
+    p = q % 2 + 1
+    r, rem = divmod(n + 1, s)
+    if rem != 0:
+        raise ValueError("Invalid certificate")
+
+    if gcd(p, q) != 1:
+        raise ValueError("Invalid certificate")
+    if jacobi(p ** 2 - 4 * q, n) != -1:
+        raise ValueError("Invalid certificate")
+    u, v, k = lucasPQ(p, q, (n+1)//2, n)
+    if not v == 0:
+        raise ValueError("Invalid certificate")
+    u, v, k = lucasPQ(p, q, s//2, n)
+    if not v != 0:
+        raise ValueError("Invalid certificate")
+    return r
+
+def brillhart_lehmer_selfridge_test(n, s, b):
+    # the "N-1 Test"
+    r, rem = divmod(n - 1, s)
+    if rem != 0:
+        raise ValueError("Invalid certificate")
+    if not s < r:
+        raise ValueError("Invalid certificate")
+    if pow(b, n-1, n) != 1:
+        raise ValueError("Invalid certificate")
+    if gcd(b ** s - 1, n) != 1:
+        raise ValueError("Invalid certificate")
+    return r
+
 def curve_test(n, s, w, a, b, t):
+    # Atkin-Goldwasser-Kilian-Morain test
+    # the "Elliptic Curve Test"
     r, rem = divmod(n + 1 - w, s)
     if rem != 0:
         raise ValueError("Invalid certificate")
@@ -192,12 +251,44 @@ n = r
 s = int('7FE12A6', 16)
 q = 2
 
-print("testing: " + str(n))
-p = q % 2 + 1
-r, rem = divmod(n + 1, s)
-assert rem == 0
-gcd(p, q) == 1
-assert jacobi(p ** 2 - 4 * q, n) == -1
-assert (n + 1) % 2 == 0
-assert lucas(s//2, n) != 0
-assert lucas2((n + 1)//2, n) == 0, (lucas2((n + 1)//2, n), (n + 1)//2)
+r = lucas_lehmer_riesel_test(n, s, q)
+
+# ninth test
+n = r
+s = int('25E', 16)
+q = 6
+
+r = lucas_lehmer_riesel_test(n, s, q)
+
+# tenth test
+n = r
+s = int('5D904', 16)
+w = -int('21DDACE79C14', 16)
+a = 0
+b = 3
+t = 1
+
+r = curve_test(n, s, w, a, b, t)
+
+# eleventh test
+n = r
+s = int('26B86', 16)
+w = int('80D12BB0A', 16)
+a = - int('1E', 16)
+b = int('38', 16)
+t = 0
+
+r = curve_test(n, s, w, a, b, t)
+
+# BPSW will be much faster and r at this point is guaranteed to be smaller
+# than 2**64 for which we know there are no pseudoprimes
+try:
+    if r % 2 == 0:
+        raise ValueError("not prime")
+    for n in range(3, int(r**0.5)+1, 2):
+        if r % n == 0:
+            raise ValueError("not prime: " + str(n))
+except KeyboardInterrupt:
+    print(n)
+    raise
+print("Number is prime")
