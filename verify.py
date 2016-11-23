@@ -2,6 +2,12 @@ from ecdsa.ellipticcurve import CurveFp, Point, INFINITY
 from ecdsa.numbertheory import gcd, jacobi
 oneseventwoeight = 1728
 
+try:
+    xrange
+except NameError:
+    xrange = range
+
+
 def fibonacci(n, mod):
 #    print("calculating for: " + str(n))
     if n == 0:
@@ -285,7 +291,7 @@ r = curve_test(n, s, w, a, b, t)
 try:
     if r % 2 == 0:
         raise ValueError("not prime")
-    for n in range(3, int(r**0.5)+1, 2):
+    for n in xrange(3, int(r**0.5)+1, 2):
         if r % n == 0:
             raise ValueError("not prime: " + str(n))
 except KeyboardInterrupt:
