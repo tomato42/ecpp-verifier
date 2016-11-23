@@ -147,7 +147,7 @@ def brillhart_lehmer_selfridge_test(n, s, b):
         raise ValueError("Invalid certificate")
     if pow(b, n-1, n) != 1:
         raise ValueError("Invalid certificate")
-    if gcd(b ** s - 1, n) != 1:
+    if gcd((pow(b, s, n) - 1) % n, n) != 1:
         raise ValueError("Invalid certificate")
     return r
 
