@@ -1,0 +1,118 @@
+#!/usr/bin/python
+
+from __future__ import print_function
+import ConfigParser
+import sys
+import StringIO
+from verify import *
+import getopt
+
+# xrange python3 compatibility
+try:
+    xrange
+except NameError:
+    xrange = range
+
+# dict with params
+params = {}
+def par_set():
+    params.update({'s':None, 'w':None, 'j':None, 't':None, 'a':None, 'b':None, 'q':None, 'r':None})
+
+# division function
+def is_prime_64(n):
+    if n % 2 == 0:
+        raise ValueError("not prime")
+    for i in xrange(3, int(n**0.5)+1, 2):
+        if n % i == 0:
+            raise ValueError("not prime: " + str(n))
+
+def main():
+    with open(sys.argv[1], 'r+') as f:
+        config_buff = f.read()
+        f.close()
+    config_ini = StringIO.StringIO(config_buff)
+    config = ConfigParser.RawConfigParser(allow_no_value=True)
+    config.readfp(config_ini)
+    sections = config.sections()
+
+    # set paramiters
+    par_set()
+
+    # set combinations
+    c_t1 = set(['s','w','j','t'])
+    c_t2 = set(['s','w','a','b','t'])
+    llr_t = set(['s','q'])
+    bls_t = set(['s','b'])
+
+    # prime candidate
+    n = config.get('Candidate','N')
+    n = int(n.replace("$",""), 16)
+
+    print("===============")
+    print("Candidate: ")
+    print(n)
+    print("===============")
+
+    section = str(1)
+    run = True
+    while run: 
+        if section in sections:
+            par_set()
+            par_list = set([])
+            options = config.options(section)
+            print("===============")
+            print(section)
+            print("===============")
+            for option in options:
+                print(option + '=' + config.get(section,option))
+                value = config.get(section,option)
+                # removing "$" from the hex
+                params[option] = int(value.replace("$",""), 16)
+                par_list.add(option)
+            print(par_list)
+            print(params)
+            s = params['s']
+            w = params['w']
+            t = params['t']
+            j = params['j']
+            a = params['a']
+            b = params['b']
+            q = params['q']
+            if c_t1 == par_list:
+                print("start ----> c_t1")
+                n = curve_test(n, s, w, t, j=j)
+                print("n:")
+                print(n)
+                print("end ------> c_t1")
+            if c_t2 == par_list:
+                print("start -----> c_t2")
+                n = curve_test(n, s, w, t, a, b)
+                print("n:")
+                print(n)
+                print("end ------> c_t2")
+            if llr_t == par_list:
+                print("start -----> llr_t")
+                n = lucas_lehmer_riesel_test(n, s, q)
+                print("n:")
+                print(n)
+                print("end ------> llr_t")
+            if bls_t == par_list:
+                print("start ------ > bls_t")
+                n = brillhart_lehmer_selfridge_test(n, s, b)
+                print("n:")
+                print(n)
+                print("end ------ > bls_t")
+            section = str(int(section) + 1)
+            run = True
+        else:
+            print("-> end of sections")
+            run = False
+    try:
+        is_prime_64(n)
+    except KeyboardInterrupt:
+        print(n)
+        raise
+    print("Number is prime")
+
+if __name__ == "__main__":
+    main()

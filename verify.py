@@ -1,12 +1,7 @@
 from ecdsa.ellipticcurve import CurveFp, Point, INFINITY
 from ecdsa.numbertheory import gcd, jacobi
+
 oneseventwoeight = 1728
-
-try:
-    xrange
-except NameError:
-    xrange = range
-
 
 def fibonacci(n, mod):
 #    print("calculating for: " + str(n))
@@ -157,9 +152,15 @@ def brillhart_lehmer_selfridge_test(n, s, b):
         raise ValueError("Invalid certificate")
     return r
 
-def curve_test(n, s, w, a, b, t):
+def curve_test(n, s, w, t, a=None, b=None, j=None):
     # Atkin-Goldwasser-Kilian-Morain test
     # the "Elliptic Curve Test"
+    
+    if a is None:
+        a = (3 * j * (oneseventwoeight - j)) % n
+    if b is None:
+        b = (2 * j * (oneseventwoeight - j)**2) % n
+
     r, rem = divmod(n + 1 - w, s)
     if rem != 0:
         raise ValueError("Invalid certificate")
@@ -178,123 +179,3 @@ def curve_test(n, s, w, a, b, t):
     if p3 != INFINITY:
         raise ValueError("Invalid certificate")
     return r
-
-n = int('DCDC6B71DC025F85E16C61A216B0CF4DC56C98C8A64C47C37946811C772C79A1', 16)
-
-# first test
-s = int('23730916', 16)
-w = int('1DB556E4FD86179D244D1689C1C01BF60', 16)
-j = int('25CC0DD00740CCC8EBF0A646AE8635D165FAF62F6FC19BFE645445352EB7CACC', 16)
-t = 0
-
-a = (3 * j * (oneseventwoeight - j)) % n
-b = (2 * j * (oneseventwoeight - j)**2) % n
-
-r = curve_test(n, s, w, a, b, t)
-
-# second test
-n = r
-s = int('2015D8', 16)
-w = int('343AAA8D8065657092D92E8BCD16C', 16)
-a = - int('23', 16)
-b = int('62', 16)
-t = 0
-
-r = curve_test(n, s, w, a, b, t)
-
-# third test
-n = r
-s = int('14C26A1', 16)
-w = -int('D92A9D7F211855A59181D58135', 16)
-a = 0
-b = int('10', 16)
-t = 2
-
-r = curve_test(n, s, w, a, b, t)
-
-# fourth test
-n = r
-s = int('EAC3D', 16)
-w = int('5BF4921CD859032B50FC4B3', 16)
-a = 0
-b = 6
-t = 1
-
-r = curve_test(n, s, w, a, b, t)
-
-# fifth test
-n = r
-s = int('1144', 16)
-w = -int('297EAD6A4417FA7C25462', 16)
-a = 3
-b = 0
-t = 1
-
-r = curve_test(n, s, w, a, b, t)
-
-# sixth test
-n = r
-s = int('6225', 16)
-w = int('88D4ADC7F64CFFE731D', 16)
-a = - int('108', 16)
-b = int('69E', 16)
-t = 2
-
-r = curve_test(n, s, w, a, b, t)
-
-# seventh test
-n = r
-s = int('4C4', 16)
-w = -int('10524B97FE172A1FA2', 16)
-a = 2
-b = 0
-t = 4
-
-r = curve_test(n, s, w, a, b, t)
-
-# eight test
-n = r
-s = int('7FE12A6', 16)
-q = 2
-
-r = lucas_lehmer_riesel_test(n, s, q)
-
-# ninth test
-n = r
-s = int('25E', 16)
-q = 6
-
-r = lucas_lehmer_riesel_test(n, s, q)
-
-# tenth test
-n = r
-s = int('5D904', 16)
-w = -int('21DDACE79C14', 16)
-a = 0
-b = 3
-t = 1
-
-r = curve_test(n, s, w, a, b, t)
-
-# eleventh test
-n = r
-s = int('26B86', 16)
-w = int('80D12BB0A', 16)
-a = - int('1E', 16)
-b = int('38', 16)
-t = 0
-
-r = curve_test(n, s, w, a, b, t)
-
-# BPSW will be much faster and r at this point is guaranteed to be smaller
-# than 2**64 for which we know there are no pseudoprimes
-try:
-    if r % 2 == 0:
-        raise ValueError("not prime")
-    for n in xrange(3, int(r**0.5)+1, 2):
-        if r % n == 0:
-            raise ValueError("not prime: " + str(n))
-except KeyboardInterrupt:
-    print(n)
-    raise
-print("Number is prime")
