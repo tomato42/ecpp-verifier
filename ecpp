@@ -1,11 +1,18 @@
 #!/usr/bin/python
 
-from __future__ import print_function
-import ConfigParser
+# Author: Hubert Kario, Stefan Dordevic
+# Released under Gnu GPL v2.1, see LICENSE file for details
+
+from __future__ import print_function, division
+import os
 import sys
-import StringIO
-from verify import *
 import getopt
+import ConfigParser
+import StringIO
+from verify import fibonacci, matrix_square, mat_mult, matrix_pow, \
+        fibonacci2, lucas, lucas2, lucasPQ, lucas_lehmer_riesel_test, \
+        brillhart_lehmer_selfridge_test, curve_test
+from convert import numBits, numBytes, numberToByteArray, sha256_of_number
 
 # xrange python3 compatibility
 try:
@@ -13,23 +20,61 @@ try:
 except NameError:
     xrange = range
 
+# input files directory for primo tool
+PRIMO_IN = 'in/'
+CERTS_DIR = 'certificates/'
+
 # dict with params
-params = {}
+PARAMS = {}
+
+
 def par_set():
-    params.update({'s':None, 'w':None, 'j':None, 't':None, 'a':None, 'b':None, 'q':None, 'r':None})
+    """Paramater set/reset function"""
+    PARAMS.update({'s': None, 'w': None, 'j': None, 't': None,
+                   'a': None, 'b': None, 'q': None, 'r': None})
+
 
 # division function
 def is_prime_64(n):
+    """Check if number is a prime through trial division"""
     if n % 2 == 0:
         raise ValueError("not prime")
     for i in xrange(3, int(n**0.5)+1, 2):
         if n % i == 0:
             raise ValueError("not prime: " + str(n))
 
-def main():
-    with open(sys.argv[1], 'r+') as f:
+
+def candidate_finder(path):
+    """Return the int number from certificates Candidate section.
+       If file is malformed, file is not primality certificate, or version
+       of primality certificate is unsupported 'None' will be returned"""
+    with open(path) as f:
         config_buff = f.read()
-        f.close()
+    config_ini = StringIO.StringIO(config_buff)
+    config = ConfigParser.RawConfigParser(allow_no_value=True)
+    config.readfp(config_ini)
+    v = config.get('PRIMO - Primality Certificate', 'Format')
+    if v is "4":
+        n = config.get('Candidate', 'N')
+        n = int(n.replace("$", ""), 16)
+        return n
+    else:
+        return
+
+
+def create_in_file(directory, int_prime_moduli):
+    """Create input file for primo tool"""
+    file_name = sha256_of_number(int_prime_moduli)
+    file_name = str(file_name + ".in")
+    with open(directory + file_name, "w+") as f:
+        f.write("[Candidate]\n")
+        f.write("N={0}\n".format(int_prime_moduli))
+
+
+def verify(path):
+    """Primality certificate verification"""
+    with open(path, 'r+') as f:
+        config_buff = f.read()
     config_ini = StringIO.StringIO(config_buff)
     config = ConfigParser.RawConfigParser(allow_no_value=True)
     config.readfp(config_ini)
@@ -39,80 +84,172 @@ def main():
     par_set()
 
     # set combinations
-    c_t1 = set(['s','w','j','t'])
-    c_t2 = set(['s','w','a','b','t'])
-    llr_t = set(['s','q'])
-    bls_t = set(['s','b'])
+    c_t1 = set(['s', 'w', 'j', 't'])
+    c_t2 = set(['s', 'w', 'a', 'b', 't'])
+    llr_t = set(['s', 'q'])
+    bls_t = set(['s', 'b'])
 
     # prime candidate
-    n = config.get('Candidate','N')
-    n = int(n.replace("$",""), 16)
-
-    print("===============")
-    print("Candidate: ")
-    print(n)
-    print("===============")
-
+    n = config.get('Candidate', 'N')
+    n = int(n.replace("$", ""), 16)
     section = str(1)
     run = True
-    while run: 
+    while run:
         if section in sections:
             par_set()
             par_list = set([])
             options = config.options(section)
-            print("===============")
-            print(section)
-            print("===============")
             for option in options:
-                print(option + '=' + config.get(section,option))
-                value = config.get(section,option)
-                # removing "$" from the hex
-                params[option] = int(value.replace("$",""), 16)
+                value = config.get(section, option)
+                PARAMS[option] = int(value.replace("$", ""), 16)
                 par_list.add(option)
-            print(par_list)
-            print(params)
-            s = params['s']
-            w = params['w']
-            t = params['t']
-            j = params['j']
-            a = params['a']
-            b = params['b']
-            q = params['q']
+            s = PARAMS['s']
+            w = PARAMS['w']
+            t = PARAMS['t']
+            j = PARAMS['j']
+            a = PARAMS['a']
+            b = PARAMS['b']
+            q = PARAMS['q']
             if c_t1 == par_list:
-                print("start ----> c_t1")
                 n = curve_test(n, s, w, t, j=j)
-                print("n:")
-                print(n)
-                print("end ------> c_t1")
             if c_t2 == par_list:
-                print("start -----> c_t2")
                 n = curve_test(n, s, w, t, a, b)
-                print("n:")
-                print(n)
-                print("end ------> c_t2")
             if llr_t == par_list:
-                print("start -----> llr_t")
                 n = lucas_lehmer_riesel_test(n, s, q)
-                print("n:")
-                print(n)
-                print("end ------> llr_t")
             if bls_t == par_list:
-                print("start ------ > bls_t")
                 n = brillhart_lehmer_selfridge_test(n, s, b)
-                print("n:")
-                print(n)
-                print("end ------ > bls_t")
             section = str(int(section) + 1)
             run = True
         else:
-            print("-> end of sections")
             run = False
     try:
         is_prime_64(n)
     except KeyboardInterrupt:
         print(n)
         raise
-    print("Number is prime")
+    return True
+
+
+def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
+    """Correlate between functionalities"""
+    missing_cert_flag = False
+    cert_files = []
+    if certs is None:
+        certs = CERTS_DIR
+    for path, _, files in os.walk(certs):
+        for name in files:
+            cert_files.append(os.path.join(path, name))
+    cert_dict = {}
+    for cert in cert_files:
+        if cert.endswith('.out'):
+            path = cert
+            cert_candidate = candidate_finder(path)
+            cert_dict[cert_candidate] = path
+    with open(str(moduli)) as f:
+        inputfile = filter(None, (line.rstrip() for line in f))
+        for count_line, line in enumerate(inputfile, 1):
+            if line.startswith('#'):
+                continue
+            prime_moduli = (line.split(" ")[6])
+            int_prime_moduli = int(prime_moduli, 16)
+            sophie_prime_moduli = (int_prime_moduli - 1) // 2
+            primes = []
+            primes.append(int_prime_moduli)
+            primes.append(sophie_prime_moduli)
+            print_out = []
+            for p in primes:
+                if p in cert_dict:
+                    print_out.append("cert: {0}".format(path))
+                    if verify_opt:
+                        if verify(cert_dict[p]):
+                            print_out[0] = ("cert: {0} - " \
+                                            "is a prime number".format(path))
+                        else:
+                            print_out[0] = ("cert: {0} - " \
+                                            "is not a prime number".format(path))
+                else:
+                    missing_cert_flag = True
+                    if primo_opt:
+                        print_out.append("creating input file for primo")
+                        create_in_file(PRIMO_IN, p)
+                    else:
+                        print_out.append("cert: missing")
+            print("[{0}] line {1}: {2}"
+                  .format("-" if missing_cert_flag else "+",
+                          count_line,
+                          ", ".join(print_out)))
+    return missing_cert_flag
+
+
+def usage():
+    """Usage"""
+    print("usage: eccp [-h] [-m arg | -i arg] [-c arg] [-p] [-v] \n")
+    print("arguments:\n")
+    print("-m, --moduli         specify moduli file")
+    print("-c, --certs          specify certificates dir")
+    print("-p, --primo-out      create primo input file if certificates not found")
+    print("-v, --verify         verify found primality certificates")
+    print("-i, --in             verify given primality certificate\n")
+    print("-h, --help           show help message\n")
+
+
+def main():
+    """Main function"""
+    moduli = None
+    certs = None
+    verify_opt = False
+    primo_opt = False
+    input_file = None
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'm:c:pvi:h', ['moduli=', \
+                                    'certs=', 'primo-out', \
+                                    'verify', 'in=', 'help'])
+    except getopt.GetoptError:
+        print("[!] parsing of arguments failed\n")
+        usage()
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            usage()
+            sys.exit(2)
+        elif opt in ('-m', '--moduli'):
+            moduli = arg
+        elif opt in ('-c', '--certs'):
+            certs = arg
+        elif opt in ('-p', '--primo-out'):
+            primo_opt = True
+        elif opt in ('-v', '--verify'):
+            verify_opt = True
+        elif opt in ('-i', '--in'):
+            input_file = arg
+        else:
+            usage()
+            sys.exit(2)
+
+    if not moduli and not input_file:
+        print("[!] moduli and certificate file not specified\n")
+        usage()
+        sys.exit(2)
+
+    if input_file and moduli:
+        print("[!] only certificate or moduli must be specified\n")
+        usage()
+        sys.exit(2)
+
+    if input_file:
+        if verify(input_file):
+            print("certificate is a prime number")
+        else:
+            print("certificate is not a prime number")
+            sys.exit(1)
+    else:
+        status = correlate(moduli, certs, verify_opt, primo_opt)
+        if status:
+            print("[!] primes without primality certificates found")
+            sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
