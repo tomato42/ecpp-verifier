@@ -1,0 +1,102 @@
+[PRIMO - Work Report]
+Version=4.2.1 - LX64
+WebSite=http://www.ellipsa.eu/
+Work=Verification
+ID=B3CA90456111B
+Created=04-06-2017 08:12:29 PM
+
+[Common]
+Path=/home/hkario/dev/ecpp-verifier/certificates/ietf-primes-kivinen/
+Selected=15
+Processed=15
+Valid=14
+Certificate 1=Valid, 1.51s
+Certificate 2=Valid, 8.34s
+Certificate 3=Valid, 31.59s
+Certificate 4=Valid, 3.22s
+Certificate 5=Valid, 96s
+Certificate 6=Valid, 8.21s
+Certificate 7=Valid, 100s
+Certificate 8=Valid, 1.77s
+Certificate 9=Valid, 0.56s
+Certificate 10=Valid, 4.36s
+Certificate 11=Valid, 0.18s
+Certificate 12=Valid, 1.17s
+Certificate 13=Valid, 0.25s
+Certificate 14=Valid, 38.31s
+Certificate 15=Failed, 0.01s
+
+[Certificate 1]
+Input=primo-B39C303B52538-001.out
+Output=primo-B39C303B52538-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 2]
+Input=primo-B393E04A1B708-001.out
+Output=primo-B393E04A1B708-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 3]
+Input=primo-B393E04A61BCB-001.out
+Output=primo-B393E04A61BCB-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 4]
+Input=primo-B393E04A04658-001.out
+Output=primo-B393E04A04658-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 5]
+Input=primo-B393E04BB8B0B-001.out
+Output=primo-B393E04BB8B0B-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 6]
+Input=primo-B393E040C94A7-001.out
+Output=primo-B393E040C94A7-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 7]
+Input=primo-B393E042F479D-001.out
+Output=primo-B393E042F479D-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 8]
+Input=primo-B393E049F9BF9-001.out
+Output=primo-B393E049F9BF9-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 9]
+Input=primo-B393E0408FB81-001.out
+Output=primo-B393E0408FB81-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 10]
+Input=primo-B393E0409F99B-001.out
+Output=primo-B393E0409F99B-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 11]
+Input=primo-B393E04065B9D-001.out
+Output=primo-B393E04065B9D-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 12]
+Input=primo-B393E04097BD8-001.out
+Output=primo-B393E04097BD8-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 13]
+Input=primo-B393E040809F0-001.out
+Output=primo-B393E040809F0-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 14]
+Input=primo-B393E041785EF-001.out
+Output=primo-B393E041785EF-001-updated-f4-1.out
+Status=Valid certificate
+
+[Certificate 15]
+Input=Primo-ikeprime-12288.out
+Status=ERROR: Invalid certificate format
+
