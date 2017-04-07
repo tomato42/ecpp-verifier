@@ -1,0 +1,60 @@
+[PRIMO - Work Report]
+Version=4.2.1 - LX64
+WebSite=http://www.ellipsa.eu/
+Work=Certification
+ID=B3CAA02A91FA1
+Created=04-07-2017 12:23:58 PM
+
+[Common]
+Path=/home/hkario/dev/ecpp-verifier/certificates/ietf-primes-kivinen/
+Selected=7
+Processed=7
+Certified=6
+Candidate 1=Certified, 1.99s
+Candidate 2=Certified, 4.54s
+Candidate 3=Aborted, 0.00s
+Candidate 4=Certified, 57.37s
+Candidate 5=Certified, 153s
+Candidate 6=Certified, 889s
+Candidate 7=Certified, 2672s
+
+[Candidate 1]
+Input=ikeprime-1024-q.in
+Report=primo-B3CAA02A91FA1-001.cr
+Output=primo-B3CAA02A91FA1-001.out
+Status=Candidate certified prime
+
+[Candidate 2]
+Input=ikeprime-1536-q.in
+Report=primo-B3CAA02A91FA1-002.cr
+Output=primo-B3CAA02A91FA1-002.out
+Status=Candidate certified prime
+
+[Candidate 3]
+Input=ikeprime-2048-q.in
+Status=Error in expression, position: 2
+
+[Candidate 4]
+Input=ikeprime-3072-q.in
+Report=primo-B3CAA02A91FA1-004.cr
+Output=primo-B3CAA02A91FA1-004.out
+Status=Candidate certified prime
+
+[Candidate 5]
+Input=ikeprime-4096-q.in
+Report=primo-B3CAA02A91FA1-005.cr
+Output=primo-B3CAA02A91FA1-005.out
+Status=Candidate certified prime
+
+[Candidate 6]
+Input=ikeprime-6144-q.in
+Report=primo-B3CAA02A91FA1-006.cr
+Output=primo-B3CAA02A91FA1-006.out
+Status=Candidate certified prime
+
+[Candidate 7]
+Input=ikeprime-8192-q.in
+Report=primo-B3CAA02A91FA1-007.cr
+Output=primo-B3CAA02A91FA1-007.out
+Status=Candidate certified prime
+
