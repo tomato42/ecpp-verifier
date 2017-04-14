@@ -1,0 +1,20 @@
+[PRIMO - Work Report]
+Version=4.2.1 - LX64
+WebSite=http://www.ellipsa.eu/
+Work=Certification
+ID=B3CAF04129943
+Created=04-12-2017 06:58:47 PM
+
+[Common]
+Path=/home/hkario/dev/ecpp-verifier/certificates/ietf-primes-kivinen/
+Selected=1
+Processed=1
+Certified=1
+Candidate 1=Certified, 68348s
+
+[Candidate 1]
+Input=primo-B3CAA02F42068-001.tmp
+Report=primo-B3CAA02F42068-001.cr
+Output=primo-B3CAA02F42068-001.out
+Status=Candidate certified prime
+
