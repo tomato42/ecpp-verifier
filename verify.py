@@ -1,3 +1,6 @@
+# Author: Hubert Kario, Stefan Dordevic
+# Released under Gnu GPL v2.1, see LICENSE file for details
+
 from ecdsa.ellipticcurve import CurveFp, Point, INFINITY
 from ecdsa.numbertheory import gcd, jacobi
 
