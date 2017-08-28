@@ -44,6 +44,35 @@ def is_prime_64(n):
             raise ValueError("not prime: " + str(n))
 
 
+def is_prime_64_MR(n):
+    """
+    Check if 64 bit number is prime using Miller-Rabin algorithm.
+
+    Since we are limiting the input space, we can select bases to which
+    the primality needs to be checked to verify primality of the number.
+    """
+    if n % 2 == 0:
+        raise ValueError("not prime")
+
+    s = n - 1
+    t = 0
+    while s % 2 == 0:
+        s, t = s // 2, t + 1
+
+    # bases needed for verifying n <= 2**64
+    for a in [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]:
+        v = pow(a, s, n)
+        if v == 1:
+            continue
+        i = 0
+        while v != n - 1:
+            if i == t - 1:
+                return False
+            else:
+                v, i = pow(v, 2, n), i + 1
+    return True
+
+
 def candidate_finder(path):
     """Return the int number from certificates Candidate section.
        If file is malformed, file is not primality certificate, or version
@@ -123,7 +152,7 @@ def verify(path):
         else:
             run = False
     try:
-        is_prime_64(n)
+        is_prime_64_MR(n)
     except KeyboardInterrupt:
         print(n)
         raise
