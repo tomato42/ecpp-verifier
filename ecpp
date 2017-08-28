@@ -159,14 +159,15 @@ def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
             print_out = []
             for p in primes:
                 if p in cert_dict:
-                    print_out.append("cert: {0}".format(path))
                     if verify_opt:
                         if verify(cert_dict[p]):
-                            print_out[0] = ("cert: {0} - " \
-                                            "is a prime number".format(path))
+                            print_out.append("cert: {0} - " \
+                                             "is a prime number".format(cert_dict[p]))
                         else:
-                            print_out[0] = ("cert: {0} - " \
-                                            "is not a prime number".format(path))
+                            print_out.append("cert: {0} - " \
+                                             "is not a prime number".format(cert_dict[p]))
+                    else:
+                        print_out.append("cert: {0}".format(cert_dict[p]))
                 else:
                     missing_cert_flag = True
                     if primo_opt:
