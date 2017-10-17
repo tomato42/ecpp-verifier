@@ -125,6 +125,10 @@ def lucasPQ(p, q, n, m):
 
 def lucas_lehmer_riesel_test(n, s, q):
     # the "N+1 Test"
+    # while it builds on top of Lucal Lehmer Riesel test, it's not really
+    # typical LLR
+    # Described in Brillhart, Lehmer, Selfridge (1975) "New Primality Criteria
+    # and Factorizations of $2^m \pm 1", Theorem 15
     p = q % 2 + 1
     r, rem = divmod(n + 1, s)
     if rem != 0:
