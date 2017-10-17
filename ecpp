@@ -11,7 +11,7 @@ import ConfigParser
 import StringIO
 from verify import fibonacci, matrix_square, mat_mult, matrix_pow, \
         fibonacci2, lucas, lucas2, lucasPQ, lucas_lehmer_riesel_test, \
-        brillhart_lehmer_selfridge_test, curve_test
+        pocklington_test, curve_test
 from convert import numBits, numBytes, numberToByteArray, sha256_of_number
 
 # xrange python3 compatibility
@@ -146,7 +146,7 @@ def verify(path):
             if llr_t == par_list:
                 n = lucas_lehmer_riesel_test(n, s, q)
             if bls_t == par_list:
-                n = brillhart_lehmer_selfridge_test(n, s, b)
+                n = pocklington_test(n, s, b)
             section = str(int(section) + 1)
             run = True
         else:
