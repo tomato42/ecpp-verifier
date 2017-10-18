@@ -9,10 +9,8 @@ import sys
 import getopt
 import ConfigParser
 import StringIO
-from verify import fibonacci, matrix_square, mat_mult, matrix_pow, \
-        fibonacci2, lucas, lucas2, lucasPQ, lucas_lehmer_riesel_test, \
-        pocklington_test, curve_test
-from convert import numBits, numBytes, numberToByteArray, sha256_of_number
+from verify import lucas_lehmer_riesel_test, pocklington_test, curve_test
+from convert import sha256_of_number
 
 # xrange python3 compatibility
 try:
