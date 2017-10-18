@@ -51,6 +51,8 @@ def is_prime_64_MR(n):
     """
     if n % 2 == 0:
         raise ValueError("not prime")
+    if n > 2**64 or n < 2:
+        raise ValueError("parameter outside valid range")
 
     s = n - 1
     t = 0
