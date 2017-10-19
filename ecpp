@@ -5,6 +5,7 @@
 
 from __future__ import print_function, division
 import os
+import errno
 import sys
 import getopt
 import ConfigParser
@@ -95,6 +96,11 @@ def create_in_file(directory, int_prime_moduli):
     """Create input file for primo tool"""
     file_name = sha256_of_number(int_prime_moduli)
     file_name = str(file_name + ".in")
+    try:
+        os.makedirs(directory)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
     with open(directory + file_name, "w+") as f:
         f.write("[Candidate]\n")
         f.write("N={0}\n".format(int_prime_moduli))
