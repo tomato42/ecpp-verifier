@@ -90,7 +90,7 @@ def candidate_finder(path):
     config = ConfigParser.RawConfigParser(allow_no_value=True)
     config.readfp(config_ini)
     v = config.get('PRIMO - Primality Certificate', 'Format')
-    if v is "4":
+    if v == "4":
         n = config.get('Candidate', 'N')
         n = int(n.replace("$", ""), 16)
         return n
