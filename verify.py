@@ -1,7 +1,13 @@
 # Author: Hubert Kario, Stefan Dordevic
 # Released under Gnu GPL v2.1, see LICENSE file for details
 
-from ecdsa.ellipticcurve import CurveFp, Point, INFINITY
+try:
+    from ecdsa.ellipticcurve import PointJacobi
+    JACOBI = True
+except ImportError:
+    from ecdsa.ellipticcurve import Point
+    JACOBI = False
+from ecdsa.ellipticcurve import CurveFp, INFINITY
 from ecdsa.numbertheory import gcd, jacobi
 
 oneseventwoeight = 1728
@@ -100,7 +106,10 @@ def curve_test(n, s, w, t, a=None, b=None, j=None):
     y = (l ** 2) % n
 
     curve = CurveFp(n, a, b)
-    p1 = Point(curve, x, y)
+    if JACOBI:
+        p1 = PointJacobi(curve, x, y, 1)
+    else:
+        p1 = Point(curve, x, y)
     p2 = p1 * s
     if p2 == INFINITY:
         raise ValueError("Invalid certificate")
