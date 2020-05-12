@@ -231,6 +231,7 @@ def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
                             print_out.append("cert: {0} - " \
                                              "is a prime number".format(cert_dict[p]))
                         else:
+                            missing_cert_flag = True
                             print_out.append("cert: {0} - " \
                                              "is not a prime number".format(cert_dict[p]))
                         work_done += number_to_work_unit(p)
