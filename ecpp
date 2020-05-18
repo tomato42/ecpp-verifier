@@ -228,12 +228,12 @@ def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
                         print("Verifying... {0:5.2f}% done".format(
                               work_done / sum_work * 100), end="\r")
                         if verify(cert_dict[p]):
-                            print_out.append("cert: {0} - " \
-                                             "is a prime number".format(cert_dict[p]))
+                            print_out.append("cert: {0} - is a prime number"
+                                             .format(cert_dict[p]))
                         else:
                             missing_cert_flag = True
-                            print_out.append("cert: {0} - " \
-                                             "is not a prime number".format(cert_dict[p]))
+                            print_out.append("cert: {0} - is not a prime number"
+                                             .format(cert_dict[p]))
                         work_done += number_to_work_unit(p)
                         print("Verifying... {0:5.2f}% done".format(
                               work_done / sum_work * 100), end="\r")
