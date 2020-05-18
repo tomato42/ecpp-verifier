@@ -8,6 +8,7 @@ import os
 import errno
 import sys
 import getopt
+import math
 try:
     import ConfigParser
 except ImportError:
@@ -171,6 +172,18 @@ def verify(path):
     return True
 
 
+def number_to_work_unit(number):
+    """
+    Try to estimate the amount of work needed to verify certificate of
+    given number
+    """
+    bit_size = math.ceil(math.log(number, 2))
+    # derived experimentally
+    a = 3.522712
+    b = 3.95577E-12
+    return b * bit_size ** a
+
+
 def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
     """Correlate between functionalities"""
     missing_cert_flag = False
@@ -186,6 +199,17 @@ def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
             path = cert
             cert_candidate = candidate_finder(path)
             cert_dict[cert_candidate] = path
+
+    sum_work = 0.0
+    work_done = 0.0
+    with open(str(moduli)) as f:
+        inputfile = filter(None, (line.rstrip() for line in f))
+        for line in inputfile:
+            if line.startswith('#'):
+                continue
+            prime_moduli = int(line.split(" ")[6], 16)
+            sum_work += number_to_work_unit(prime_moduli) * 2
+
     with open(str(moduli)) as f:
         inputfile = filter(None, (line.rstrip() for line in f))
         for count_line, line in enumerate(inputfile, 1):
@@ -201,12 +225,18 @@ def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
             for p in primes:
                 if p in cert_dict:
                     if verify_opt:
+                        print("Verifying... {0:5.2f}% done".format(
+                              work_done / sum_work * 100), end="\r")
                         if verify(cert_dict[p]):
-                            print_out.append("cert: {0} - " \
-                                             "is a prime number".format(cert_dict[p]))
+                            print_out.append("cert: {0} - is a prime number"
+                                             .format(cert_dict[p]))
                         else:
-                            print_out.append("cert: {0} - " \
-                                             "is not a prime number".format(cert_dict[p]))
+                            missing_cert_flag = True
+                            print_out.append("cert: {0} - is not a prime number"
+                                             .format(cert_dict[p]))
+                        work_done += number_to_work_unit(p)
+                        print("Verifying... {0:5.2f}% done".format(
+                              work_done / sum_work * 100), end="\r")
                     else:
                         print_out.append("cert: {0}".format(cert_dict[p]))
                 else:
