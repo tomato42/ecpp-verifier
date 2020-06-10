@@ -19,7 +19,15 @@ Clone this repository:
 
 Install dependencies (for example on Fedora):
 
-    dnf install python3-ecdsa
+    dnf install python3-ecdsa python3-gmpy2
+
+Or from PyPI:
+
+    pip install ecdsa[gmpy2]
+
+Make sure you have installed `ecdsa` package version 0.15 or newer. Older
+versions have significant performance issues and certificate verification
+will take ages.
 
 Run `ecpp` for the first time:
 
@@ -29,7 +37,7 @@ Run `ecpp` for the first time:
 
 ## Verifying primes in OpenSSH moduli file
 
-To verify you have primality ceritifacetes for all the primes in your OpenSSH
+To verify you have primality certificates for all the primes in your OpenSSH
 moduli file, you can use ecpp with `-m` switch:
 
     ./ecpp -m /etc/ssh/moduli
@@ -52,7 +60,7 @@ a reasonably powerful machine (at this moment, Primo can work with up to
    (multithreading is not much useful)
  * In tab *Certification*, select *3000 dd* (decimal digits) in *Trial
    Division Parameters* and click *Build prime table* button.
- * THen click *Load*. Select all the `.in` files in
+ * Then click *Load*. Select all the `.in` files in
    the `in/` directory created by previous step and click *Open*.
  * After long time, you will get certificates in `*.out` files in the same
    directory.
