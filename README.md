@@ -25,6 +25,9 @@ Or from PyPI:
 
     pip install ecdsa[gmpy2]
 
+Make sure you have installed `ecdsa` package version 0.15 or newer. Older
+versions have significant performance issues and certificate verification
+will take ages.
 
 Run `ecpp` for the first time:
 
