@@ -19,7 +19,12 @@ Clone this repository:
 
 Install dependencies (for example on Fedora):
 
-    dnf install python3-ecdsa
+    dnf install python3-ecdsa python3-gmpy2
+
+Or from PyPI:
+
+    pip install ecdsa[gmpy2]
+
 
 Run `ecpp` for the first time:
 
