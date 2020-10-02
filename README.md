@@ -56,7 +56,7 @@ Now, open Primo downloaded from link above, extract archive and start GUI on
 a reasonably powerful machine (at this moment, Primo can work with up to
 64 cores).
 
- * From *Menu*, select *Configure*, set number of cores your system have
+ * From *Menu*, select *Setup...*, set number of cores your system have
    (multithreading is not much useful)
  * In tab *Certification*, select *3000 dd* (decimal digits) in *Trial
    Division Parameters* and click *Build prime table* button.
