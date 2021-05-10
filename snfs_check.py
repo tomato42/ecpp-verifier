@@ -1,4 +1,5 @@
 import math
+import gmpy2
 
 
 def snfs_vulnerable(n, distance=2**64):
@@ -10,6 +11,8 @@ def snfs_vulnerable(n, distance=2**64):
 
     Return True if it is vulnerable, False if it is not vulnerable.
     """
+    gmpy2.get_context().precision = 1024
+
     max_base = 100
     # For bases smaller than max_base, just calculate the value by calculating
     # logarithm
@@ -28,8 +31,8 @@ def snfs_vulnerable(n, distance=2**64):
     max_exponent = int(math.log(n, max_base - 1)) + 1
     for exponent in range(max_exponent, 2, -1):
         # compute n ^ (1/exponent), but since n is huge, it causes float
-        # overflow so perform same calculation but through natural logs
-        base = int(math.exp(1.0/exponent * math.log(n)))
+        # overflow so perform the same calculation but through natural logs
+        base = int(gmpy2.exp(gmpy2.log(n) / gmpy2.mpfr(exponent)))
         if abs(pow(base, exponent) - n) <= distance:
             return True
         # int() rounds down, so try the value rounded up
@@ -41,6 +44,7 @@ def snfs_vulnerable(n, distance=2**64):
 
 assert snfs_vulnerable((2**8192) + 1)
 assert snfs_vulnerable((2**8192) - 1)
+assert not snfs_vulnerable((2**8192) - 2**64 - 1)
 assert snfs_vulnerable(2**1024 - 2**63)
 assert snfs_vulnerable(3**3072)
 assert snfs_vulnerable(101**100)
