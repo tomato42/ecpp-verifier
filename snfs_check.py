@@ -1,12 +1,14 @@
 import math
 
 
-def snfs_check(n, distance=2**64):
+def snfs_vulnerable(n, distance=2**64):
     """
     Check if number `n` is further away from any exact power than `distance`.
 
     Test to verify if the number is vulnerable to Special Number Field Sieve
     attack on discrete logarithm problem.
+
+    Return True if it is vulnerable, False if it is not vulnerable.
     """
     max_base = 100
     # For bases smaller than max_base, just calculate the value by calculating
@@ -37,16 +39,18 @@ def snfs_check(n, distance=2**64):
     return False
 
 
-assert snfs_check((2**8192) + 1)
-assert snfs_check((2**8192) - 1)
-assert snfs_check(2**1024 - 2**63)
-assert snfs_check(3**3072)
-assert snfs_check(101**100)
-assert not snfs_check(800**300 + 2**64 + 1)
-assert snfs_check(800**300 + 2**64)
-assert not snfs_check(800**300 - 2**64 - 1)
-assert snfs_check(800**300 - 2**64)
-assert not snfs_check(2**1024 + 2**64 + 1)
-assert snfs_check(2**1024 + 2**64)
-assert not snfs_check(2**1024 - 2**64 - 1)
-assert snfs_check(2**1024 - 2**64)
+assert snfs_vulnerable((2**8192) + 1)
+assert snfs_vulnerable((2**8192) - 1)
+assert snfs_vulnerable(2**1024 - 2**63)
+assert snfs_vulnerable(3**3072)
+assert snfs_vulnerable(101**100)
+assert not snfs_vulnerable(800**300 + 2**64 + 1)
+assert snfs_vulnerable(800**300 + 2**64)
+assert not snfs_vulnerable(800**300 - 2**64 - 1)
+assert snfs_vulnerable(800**300 - 2**64)
+assert not snfs_vulnerable(2**1024 + 2**64 + 1)
+assert snfs_vulnerable(2**1024 + 2**64)
+assert not snfs_vulnerable(2**1024 - 2**64 - 1)
+assert snfs_vulnerable(2**1024 - 2**64)
+# also check with an actual safe-prime:
+assert snfs_vulnerable(2**1024 - 1093337)
