@@ -10,6 +10,13 @@ application.
 
 Read more on [primality testing](http://cr.yp.to/primetests.html)
 
+When verifying primality certificates, it also checks if the number is not
+vulnerable to
+[Special Number Field Sieve](https://en.wikipedia.org/wiki/Special_number_field_sieve),
+as primes of this form have effective bit size reduced by a third
+(i.e. 3072 bit SNFS-vulnerable prime is about as easy to attack as a 2048 bit
+prime).
+
 # Installation
 
 Clone this repository:
