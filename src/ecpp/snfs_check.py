@@ -1,5 +1,36 @@
 import math
-import gmpy2
+
+
+def iroot(k, n):
+    """
+    Calculate `k`-th root of `n` using only integer operations.
+
+    Return value is rounded down.
+    """
+    hi = 1
+    while pow(hi, k) < n:
+        hi *= 2
+    lo = hi // 2
+    while hi - lo > 1:
+        mid = (lo + hi) // 2
+        midToK = pow(mid, k)
+        if midToK < n:
+            lo = mid
+        elif n < midToK:
+            hi = mid
+        else:
+            return mid
+    if pow(hi, k) == n:
+        return hi
+    else:
+        return lo
+
+
+assert 4 == iroot(4, 4**4)
+assert 4 == iroot(1024, 4**1024)
+assert 901 == iroot(777, 901**777)
+assert 900 == iroot(777, 901**777 - 1)
+assert 901 == iroot(777, 902**777 - 1)
 
 
 def snfs_vulnerable(n, distance=2**64):
@@ -11,8 +42,6 @@ def snfs_vulnerable(n, distance=2**64):
 
     Return True if it is vulnerable, False if it is not vulnerable.
     """
-    gmpy2.get_context().precision = 1024
-
     max_base = 100
     # For bases smaller than max_base, just calculate the value by calculating
     # logarithm
@@ -30,9 +59,7 @@ def snfs_vulnerable(n, distance=2**64):
     # for which the integer exponent will lie near n
     max_exponent = int(math.log(n, max_base - 1)) + 1
     for exponent in range(max_exponent, 2, -1):
-        # compute n ^ (1/exponent), but since n is huge, it causes float
-        # overflow so perform the same calculation but through natural logs
-        base = int(gmpy2.exp(gmpy2.log(n) / gmpy2.mpfr(exponent)))
+        base = iroot(exponent, n)
         if abs(pow(base, exponent) - n) <= distance:
             return True
         # int() rounds down, so try the value rounded up
@@ -45,6 +72,9 @@ def snfs_vulnerable(n, distance=2**64):
 assert snfs_vulnerable((2**8192) + 1)
 assert snfs_vulnerable((2**8192) - 1)
 assert not snfs_vulnerable((2**8192) - 2**64 - 1)
+assert snfs_vulnerable((2**8192) + 2**64)
+assert not snfs_vulnerable(801**921 + 2**64 + 1)
+assert snfs_vulnerable(801**921 + 2**64)
 assert snfs_vulnerable(2**1024 - 2**63)
 assert snfs_vulnerable(3**3072)
 assert snfs_vulnerable(101**100)
