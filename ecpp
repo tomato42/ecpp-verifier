@@ -9,6 +9,7 @@ import errno
 import sys
 import getopt
 import math
+import six
 try:
     import ConfigParser
 except ImportError:
@@ -17,9 +18,10 @@ try:
     import StringIO
 except ImportError:
     import io as StringIO
-from verify import lucas_lehmer_riesel_test, pocklington_test, curve_test
-from convert import sha256_of_number
-from snfs_check import snfs_vulnerable
+import pkg_resources
+from ecpp.verify import lucas_lehmer_riesel_test, pocklington_test, curve_test
+from ecpp.convert import sha256_of_number
+from ecpp.snfs_check import snfs_vulnerable
 
 # xrange python3 compatibility
 try:
@@ -29,7 +31,6 @@ except NameError:
 
 # input files directory for primo tool
 PRIMO_IN = 'in/'
-CERTS_DIR = 'certificates/'
 
 # dict with params
 PARAMS = {}
@@ -82,15 +83,14 @@ def is_prime_64_MR(n):
     return True
 
 
-def candidate_finder(path):
+def candidate_finder(config_buff):
     """Return the int number from certificates Candidate section.
        If file is malformed, file is not primality certificate, or version
        of primality certificate is unsupported 'None' will be returned"""
-    with open(path) as f:
-        config_buff = f.read()
-    config_ini = StringIO.StringIO(config_buff)
     config = ConfigParser.RawConfigParser(allow_no_value=True)
-    config.readfp(config_ini)
+    if not six.PY2:
+        config_buff = str(config_buff, "utf-8")
+    config.read_string(config_buff)
     v = config.get('PRIMO - Primality Certificate', 'Format')
     if v == "4":
         n = config.get('Candidate', 'N')
@@ -114,13 +114,12 @@ def create_in_file(directory, int_prime_moduli):
         f.write("N={0}\n".format(int_prime_moduli))
 
 
-def verify(path):
+def verify(config_buff):
     """Primality certificate verification"""
-    with open(path, 'r+') as f:
-        config_buff = f.read()
-    config_ini = StringIO.StringIO(config_buff)
+    if not six.PY2:
+        config_buff = str(config_buff, "utf-8")
     config = ConfigParser.RawConfigParser(allow_no_value=True)
-    config.readfp(config_ini)
+    config.read_string(config_buff)
     sections = config.sections()
 
     # set paramiters
@@ -188,18 +187,35 @@ def number_to_work_unit(number):
 def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
     """Correlate between functionalities"""
     missing_cert_flag = False
-    cert_files = []
     if certs is None:
-        certs = CERTS_DIR
-    for path, _, files in os.walk(certs):
-        for name in files:
-            cert_files.append(os.path.join(path, name))
-    cert_dict = {}
-    for cert in cert_files:
-        if cert.endswith('.out'):
-            path = cert
-            cert_candidate = candidate_finder(path)
-            cert_dict[cert_candidate] = path
+        # use built-in
+        dirs = ["certificates/" + i for i in
+                pkg_resources.resource_listdir("ecpp", "certificates")
+                if pkg_resources.resource_isdir("ecpp", "certificates/" + i)]
+        cert_files = []
+        for name in dirs:
+            cert_files.extend(name + "/" + i for i in
+                              pkg_resources.resource_listdir("ecpp", name)
+                              if i.endswith('.out'))
+        cert_dict = {}
+        for cert in cert_files:
+            file_buf = pkg_resources.resource_string("ecpp", cert)
+            cert_candidate = candidate_finder(file_buf)
+            cert_dict[cert_candidate] = cert
+
+    else:
+        cert_files = []
+        for path, _, files in os.walk(certs):
+            for name in files:
+                cert_files.append(os.path.join(path, name))
+        cert_dict = {}
+        for cert in cert_files:
+            if cert.endswith('.out'):
+                path = cert
+                with open(path, "rb") as f:
+                    file_buf = f.read()
+                cert_candidate = candidate_finder(file_buf)
+                cert_dict[cert_candidate] = path
 
     sum_work = 0.0
     work_done = 0.0
@@ -228,7 +244,13 @@ def correlate(moduli, certs=None, verify_opt=None, primo_opt=None):
                     if verify_opt:
                         print("Verifying... {0:5.2f}% done".format(
                               work_done / sum_work * 100), end="\r")
-                        if verify(cert_dict[p]):
+                        if certs is None:
+                            cert_buff = pkg_resources.resource_string(
+                                "ecpp", cert_dict[p])
+                        else:
+                            with open(cert_dict[p], "rb") as f:
+                                cert_buff = f.read()
+                        if verify(cert_buff):
                             print_out.append("cert: {0} - is a prime number"
                                              .format(cert_dict[p]))
                         else:
@@ -342,7 +364,9 @@ def main():
 
     if input_file:
         ret = 0
-        if verify(input_file):
+        with open(input_file, "rb") as f:
+            cert_buff = f.read()
+        if verify(cert_buff):
             print("certificate is a prime number")
         else:
             print("certificate is not a prime number")
