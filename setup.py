@@ -40,5 +40,5 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    install_requires=["six>=1.9.0", "gmpy2", "ecdsa>=0.15"],
+    install_requires=["six>=1.9.0", "ecdsa>=0.15", "setuptools"],
 )
