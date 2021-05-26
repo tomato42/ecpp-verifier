@@ -1,38 +1,6 @@
 import math
 
 
-def iroot(k, n):
-    """
-    Calculate `k`-th root of `n` using only integer operations.
-
-    Return value is rounded down.
-    """
-    hi = 1
-    while pow(hi, k) < n:
-        hi *= 2
-    lo = hi // 2
-    while hi - lo > 1:
-        mid = (lo + hi) // 2
-        midToK = pow(mid, k)
-        if midToK < n:
-            lo = mid
-        elif n < midToK:
-            hi = mid
-        else:
-            return mid
-    if pow(hi, k) == n:
-        return hi
-    else:
-        return lo
-
-
-assert 4 == iroot(4, 4**4)
-assert 4 == iroot(1024, 4**1024)
-assert 901 == iroot(777, 901**777)
-assert 900 == iroot(777, 901**777 - 1)
-assert 901 == iroot(777, 902**777 - 1)
-
-
 def snfs_vulnerable(n, distance=2**64):
     """
     Check if number `n` is further away from any exact power than `distance`.
@@ -46,26 +14,37 @@ def snfs_vulnerable(n, distance=2**64):
     # For bases smaller than max_base, just calculate the value by calculating
     # logarithm
     for base in range(2, max_base):
-        exponent = int(math.log(n, base))
-        if abs(pow(base, exponent) - n) <= distance:
-            return True
-        # int() rounds down, try value rounded up
-        if abs(pow(base, exponent + 1) - n) <= distance:
-            return True
-    # for higher bases, the result of logarithm (the exponent we're
-    # searching for) changes only a little for every base increase, and we
-    # are only interested
-    # in integer bases and exponents, so reverse the search - look for bases
-    # for which the integer exponent will lie near n
-    max_exponent = int(math.log(n, max_base - 1)) + 1
-    for exponent in range(max_exponent, 2, -1):
-        base = iroot(exponent, n)
-        if abs(pow(base, exponent) - n) <= distance:
-            return True
-        # int() rounds down, so try the value rounded up
-        if abs(pow(base + 1, exponent) - n) <= distance:
+        log = math.log(n, base)
+        if min(abs(base**int(math.floor(log)) - n),
+               abs(base**int(math.ceil(log)) - n)) <= distance:
             return True
 
+    # for higher bases, the result of logarithm
+    # (the exponent we're searching for)
+    # changes only a little for every base increase,
+    # and we are only interested in integer bases and exponents,
+    # so reverse the search -
+    # look for bases for which the integer exponent will lie near n
+    max_exponent = int(math.log(n, max_base - 1)) + 1
+    for exponent in range(max_exponent, 2, -1):
+        # e = log(n, b) = log(n, 2) / log(b, 2)
+        # log(b, 2) = log(n, 2) / e
+        # b = 2**(log(n, 2) / e)
+        base_high = 2**int(math.ceil(float(n.bit_length()) / exponent))
+        base_low = 2**int(math.floor((float(n.bit_length()) - 1) / exponent))
+        # assert base_low**exponent <= n <= base_high**exponent
+        while base_high != base_low + 1:
+            attempt_at_base = (base_low + base_high) // 2
+            attempt_at_n = attempt_at_base**exponent
+            if attempt_at_n > n:
+                base_high = attempt_at_base
+            elif attempt_at_n < n:
+                base_low = attempt_at_base
+            else:
+               return True  # base**e = n = attempt_at_n
+        if min(abs(base_high**exponent - n),
+               abs(base_low**exponent - n)) <= distance:
+            return True
     return False
 
 
