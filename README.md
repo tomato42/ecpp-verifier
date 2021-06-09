@@ -19,6 +19,34 @@ prime).
 
 # Installation
 
+## From distribution files
+
+Download the most recent release `.whl` file from github:
+
+    curl -s https://api.github.com/repos/tomato42/ecpp-verifier/releases/latest \
+    | grep "browser_download_url.*whl" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -i -
+
+Or manually, by visiting
+[latest release](https://github.com/tomato42/ecpp-verifier/releases/latest)
+and downloading the `.whl` file from there.
+
+Install it using `pip`:
+
+    pip install ecpp-*.whl
+
+Verify that it can be executed:
+
+    ecpp --help
+
+Install `gmpy2` package to double the performance of certificate verification:
+
+    pip install gmpy2
+
+## From sources
+
 Clone this repository:
 
     git clone https://github.com/tomato42/ecpp-verifier.git
@@ -32,13 +60,17 @@ Or from PyPI:
 
     pip install ecdsa[gmpy2]
 
+(Note: as `gmpy2` is a binary package you will need to install development
+headers for python and the gmp library. Alternatively, you can skip
+installation of `gmpy2` at the cost of halved performance).
+
 Make sure you have installed `ecdsa` package version 0.15 or newer. Older
 versions have significant performance issues and certificate verification
 will take ages.
 
 Run `ecpp` for the first time:
 
-    ./ecpp --help
+    PYTHONPATH=src ./ecpp --help
 
 # Usage
 
@@ -47,7 +79,7 @@ Run `ecpp` for the first time:
 To verify you have primality certificates for all the primes in your OpenSSH
 moduli file, you can use ecpp with `-m` switch:
 
-    ./ecpp -m /etc/ssh/moduli
+    ecpp -m /etc/ssh/moduli
 
 This will succeed for example for moduli file released with OpenSSH 8.2p1,
 listing certificates for each prime.
@@ -57,7 +89,7 @@ listing certificates for each prime.
 If there are some primes without primality certificates, you can generate
 input files for Primo into `in/` directory.
 
-    ./ecpp -m /etc/ssh/moduli -p
+    ecpp -m /etc/ssh/moduli -p
 
 Now, open Primo downloaded from link above, extract archive and start GUI on
 a reasonably powerful machine (at this moment, Primo can work with up to
@@ -77,13 +109,13 @@ a reasonably powerful machine (at this moment, Primo can work with up to
 In previous step, we got certificates for primes. Now we need to verify them.
 This can be done with the following command for one certificate:
 
-    ./ecpp -i in/primo-B412D0397A9D9-07E.out
+    ecpp -i in/primo-B412D0397A9D9-07E.out
 
 The job can be simply parallelized so if we want to verify all
 the certificates we got, we can use GNU parallel to get results in parallel,
 in this example using 16 parallel processes:
 
-    parallel -j16 "echo {} && ./ecpp -i {}" ::: in/*.out
+    parallel -j16 "echo {} && ecpp -i {}" ::: in/*.out
 
 Now, we can add the primality certificates to `certificates/` directory
 
@@ -92,4 +124,4 @@ Now, we can add the primality certificates to `certificates/` directory
 Running `ecpp` again as in the first example should confirm we have
 a certificate for each prime in the moduli file now.
 
-    ./ecpp -m /etc/ssh/moduli
+    ecpp -m /etc/ssh/moduli
