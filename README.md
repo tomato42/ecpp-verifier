@@ -1,5 +1,5 @@
 Collection of primality certificates and an open source tool
-that can be used to verify them (not yet finished).
+that can be used to verify them.
 
 Application can verify [Atkin-Goldwasser-Kilian-Morain Certificate](http://mathworld.wolfram.com/Atkin-Goldwasser-Kilian-MorainCertificate.html),
 [Pocklington certificate](http://mathworld.wolfram.com/PocklingtonsTheorem.html)
@@ -96,11 +96,11 @@ a reasonably powerful machine (at this moment, Primo can work with up to
 64 cores).
 
  * From *Menu*, select *Setup...*, set number of cores your system have
-   (multithreading is not much useful)
+   (hyper-threading is not much useful)
  * In tab *Certification*, select *3000 dd* (decimal digits) in *Trial
    Division Parameters* and click *Build prime table* button.
  * Then click *Load*. Select all the `.in` files in
-   the `in/` directory created by previous step and click *Open*.
+   the `in/` directory created by the previous step and click *Open*.
  * After long time, you will get certificates in `*.out` files in the same
    directory.
 
@@ -117,7 +117,8 @@ in this example using 16 parallel processes:
 
     parallel -j16 "echo {} && ecpp -i {}" ::: in/*.out
 
-Now, we can add the primality certificates to `certificates/` directory
+Now, we can add the primality certificates to `src/ecpp/certificates/`
+directory.
 
 ## Verifying primes in OpenSSH moduli file again
 
