@@ -35,7 +35,7 @@ and downloading the `.whl` file from there.
 
 Install it using `pip`:
 
-    pip install ecpp-*.whl
+    pip3 install ecpp-*.whl
 
 Verify that it can be executed:
 
@@ -43,7 +43,7 @@ Verify that it can be executed:
 
 Install `gmpy2` package to double the performance of certificate verification:
 
-    pip install gmpy2
+    pip3 install gmpy2
 
 ## From sources
 
@@ -58,7 +58,7 @@ Install dependencies (for example on Fedora):
 
 Or from PyPI:
 
-    pip install ecdsa[gmpy2]
+    pip3 install ecdsa[gmpy2]
 
 (Note: as `gmpy2` is a binary package you will need to install development
 headers for python and the gmp library. Alternatively, you can skip
