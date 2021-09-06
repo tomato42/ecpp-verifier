@@ -74,15 +74,29 @@ Run `ecpp` for the first time:
 
 # Usage
 
-## Verifying primes in OpenSSH moduli file
+## Matching certificates to primes in OpenSSH moduli file
 
-To verify you have primality certificates for all the primes in your OpenSSH
+To check if you have primality certificates for all the primes in your OpenSSH
 moduli file, you can use ecpp with `-m` switch:
 
     ecpp -m /etc/ssh/moduli
 
 This will succeed for example for moduli file released with OpenSSH 8.2p1,
 listing certificates for each prime.
+
+## Verifying primality certificates for primes in moduli file
+
+To verify the matching certificates you can combine the `-m` switch with
+the `-v` switch:
+
+    ecpp -m /etc/ssh/moduli -v
+
+This will succeed if the script finds matching certificates and verifies
+them as valid.
+
+Note: it will require significantly more time to execute than just the `-m`
+option. It's also a single-threaded process, see
+[#12](https://github.com/tomato42/ecpp-verifier/issues/12).
 
 ## Generating primality certificates for primes in moduli file for OpenSSH
 
@@ -120,7 +134,7 @@ in this example using 16 parallel processes:
 Now, we can add the primality certificates to `src/ecpp/certificates/`
 directory.
 
-## Verifying primes in OpenSSH moduli file again
+## Matching certificates to primes in OpenSSH moduli file again
 
 Running `ecpp` again as in the first example should confirm we have
 a certificate for each prime in the moduli file now.
