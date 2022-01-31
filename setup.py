@@ -13,7 +13,7 @@ with io.open(readme_path, encoding="utf-8") as read_file:
 
 setup(
     name="ecpp",
-    version="0.0.1",
+    version="0.0.2",
     description="Tool to verify ECPP certificates",
     long_description=long_description,
     long_description_content_type="text/markdown",
