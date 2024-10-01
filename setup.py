@@ -13,11 +13,11 @@ with io.open(readme_path, encoding="utf-8") as read_file:
 
 setup(
     name="ecpp",
-    version="0.0.2",
+    version="0.0.3",
     description="Tool to verify ECPP certificates",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="Hubert Kario",
+    author="Alicja Kario",
     author_email="hkario@redhat.com",
     url="https://github.com/tomato42/ecpp-verifier",
     packages=find_packages("src"),
