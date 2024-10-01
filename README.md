@@ -129,7 +129,7 @@ The job can be simply parallelized so if we want to verify all
 the certificates we got, we can use GNU parallel to get results in parallel,
 in this example using 16 parallel processes:
 
-    parallel -j16 "echo {} && ecpp -i {}" ::: in/*.out
+    parallel -j16 --halt now,fail=1 "echo {} && ecpp -i {}" ::: in/*.out
 
 Now, we can add the primality certificates to `src/ecpp/certificates/`
 directory.
