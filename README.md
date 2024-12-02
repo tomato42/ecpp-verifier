@@ -131,6 +131,13 @@ in this example using 16 parallel processes:
 
     parallel -j16 --halt now,fail=1 "echo {} && ecpp -i {}" ::: in/*.out
 
+or with progress reporting:
+
+    parallel --eta --progress --bar -j16 --halt now,fail=1 "echo {} && ecpp -i {}" ::: in/*.out
+
+(Change the parameter to the `-j` option if you have fewer or more than 16
+cores)
+
 Now, we can add the primality certificates to `src/ecpp/certificates/`
 directory.
 
